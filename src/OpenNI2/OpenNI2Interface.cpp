@@ -22,10 +22,15 @@ OpenNI2Interface::OpenNI2Interface(int inWidth, int inHeight, int fps)
 
     std::string errorString(openni::OpenNI::getExtendedError());
 
+    // std::string str(openni::ANY_DEVICE);
+
+    // std::cout << str << std::endl;
+
     if(errorString.length() > 0)
     {
         errorText.append(errorString);
         initSuccessful = false;
+        std::cout << errorText << std::endl;
     }
     else
     {
@@ -35,9 +40,11 @@ OpenNI2Interface::OpenNI2Interface(int inWidth, int inHeight, int fps)
             errorText.append(openni::OpenNI::getExtendedError());
             openni::OpenNI::shutdown();
             initSuccessful = false;
+            std::cout << errorText << std::endl;
         }
         else
         {
+            std::cout << "step in" << std::endl;
             openni::VideoMode depthMode;
             depthMode.setFps(fps);
             depthMode.setPixelFormat(openni::PIXEL_FORMAT_DEPTH_1_MM);
