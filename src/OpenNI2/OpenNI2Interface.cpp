@@ -58,6 +58,7 @@ OpenNI2Interface::OpenNI2Interface(int inWidth, int inHeight, int fps)
             rc = depthStream.create(device, openni::SENSOR_DEPTH);
             if (rc == openni::STATUS_OK)
             {
+                std::cout << "depthStream is OK" << std::endl;
                 depthStream.setVideoMode(depthMode);
                 rc = depthStream.start();
                 if (rc != openni::STATUS_OK)
@@ -69,13 +70,16 @@ OpenNI2Interface::OpenNI2Interface(int inWidth, int inHeight, int fps)
             }
             else
             {
+                std::cout << "depthStream is fail" << std::endl;
+                std::cout << errorText << std::endl;
                 errorText.append(openni::OpenNI::getExtendedError());
                 initSuccessful = false;
             }
 
-            rc = rgbStream.create(device, openni::SENSOR_COLOR);
+            rc = rgbStream.create(device, openni::SENSOR_IR);
             if (rc == openni::STATUS_OK)
             {
+                std::cout << "colorStream is OK" << std::endl;
                 rgbStream.setVideoMode(colorMode);
                 rc = rgbStream.start();
                 if (rc != openni::STATUS_OK)
@@ -87,6 +91,8 @@ OpenNI2Interface::OpenNI2Interface(int inWidth, int inHeight, int fps)
             }
             else
             {
+                std::cout << "colorStream is fail" << std::endl;
+                std::cout << errorText << std::endl;
                 errorText.append(openni::OpenNI::getExtendedError());
                 initSuccessful = false;
             }
@@ -100,6 +106,7 @@ OpenNI2Interface::OpenNI2Interface(int inWidth, int inHeight, int fps)
 
             if(initSuccessful)
             {
+
                 //For printing out
                 formatMap[openni::PIXEL_FORMAT_DEPTH_1_MM] = "1mm";
                 formatMap[openni::PIXEL_FORMAT_DEPTH_100_UM] = "100um";
@@ -123,12 +130,14 @@ OpenNI2Interface::OpenNI2Interface(int inWidth, int inHeight, int fps)
                     rgbBuffers[i] = std::pair<uint8_t *, int64_t>(newImage, 0);
                 }
 
+
                 for(int i = 0; i < numBuffers; i++)
                 {
                     uint8_t * newDepth = (uint8_t *)calloc(width * height * 2, sizeof(uint8_t));
                     uint8_t * newImage = (uint8_t *)calloc(width * height * 3, sizeof(uint8_t));
                     frameBuffers[i] = std::pair<std::pair<uint8_t *, uint8_t *>, int64_t>(std::pair<uint8_t *, uint8_t *>(newDepth, newImage), 0);
                 }
+
 
                 rgbCallback = new RGBCallback(lastRgbTime,
                                               latestRgbIndex,
@@ -143,14 +152,19 @@ OpenNI2Interface::OpenNI2Interface(int inWidth, int inHeight, int fps)
                 depthStream.setMirroringEnabled(false);
                 rgbStream.setMirroringEnabled(false);
 
+
                 device.setDepthColorSyncEnabled(true);
                 device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR);
 
-                setAutoExposure(false);
-                setAutoWhiteBalance(false);
+
+                // setAutoExposure(false);
+                // setAutoWhiteBalance(false);
+
 
                 rgbStream.addNewFrameListener(rgbCallback);
                 depthStream.addNewFrameListener(depthCallback);
+
+
             }
         }
     }
